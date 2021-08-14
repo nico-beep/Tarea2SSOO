@@ -1,10 +1,19 @@
+/**
+ *Tarea 2 - ELO321 
+ * 
+ * Integrantes:
+ * Francisco Rodriguez H - 201520154-3
+ * Natalia Baeza Q - 201621038-5
+ * Lorens Paez P - 201630012-0
+ * Nicolas Miranda V - 201721013-3
+**/
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <semaphore.h>
 
 #define SIZE 51
 
@@ -13,12 +22,10 @@ int checksum(char b[],int k);
 
 int main(int argc,char* argv[]){
 	
-	//sem_t mutex;
-	//sem_init(%mutex, 0 , 1);
 	
-    /*
-        *Se introducen 3 strings por consola
-    */
+    /**
+    *Se introducen 3 strings por consola
+    **/
     char str1[SIZE];
 	do{
 		printf( "First string: ");
@@ -65,9 +72,9 @@ int main(int argc,char* argv[]){
     int pid2;
     int pid3;
 
-    /*
-        *pipes ida(padre->hijo) y vuelta(hijo->padre)
-    */
+    /**
+     *Se cream pipes(1-2-3) ida(padre->hijo) y vuelta(hijo->padre)
+    **/
     int pipe1_ida[2];
     int pipe1_vuelta[2];
 
@@ -85,12 +92,12 @@ int main(int argc,char* argv[]){
     pipe(pipe2_vuelta);
     pipe(pipe3_vuelta);
 
-    /*
-        *Creacion de solo 3 procesos hijos y sus funcionamientos
-    */
+    /**
+    *Creacion de solo 3 procesos hijos y sus funcionamientos
+    **/
     pid1 = fork();	//primer fork()
     if(pid1 == 0){  //entra el hijo 1
-        //codigo de hijo 1
+        //CODIGO DE HIJO 1
         printf("Proceso hijo 1 creado, PID: %d, PPID: %d\n", getpid(), getppid());
         close(pipe1_ida[1]);        //cerrar escritura
         close(pipe1_vuelta[0]);    //cerrar lectura
@@ -99,7 +106,8 @@ int main(int argc,char* argv[]){
 		
 		
         read( pipe1_ida[0], buffer, SIZE );	//leer pipe_ida y guardar en buffer
-        if(strchr(buffer, '\0')==NULL){		//revisa si el mensaje resivido tiene un final de string
+
+        if(strchr(buffer, '\0')==NULL){		//revisa si el mensaje resivido tiene un final de string, buscar errores
 			printf("NO '0' IN PROCESS 1\n");
 		}
 				
@@ -116,7 +124,7 @@ int main(int argc,char* argv[]){
     }else {
         pid2 = fork();	//segundo fork()
         if(pid2 == 0){  //entra el hijo 2
-            //codigo de hijo 2
+            //CODIGO DE HIJO 2
             printf("Proceso hijo 2 creado, PID: %d, PPID: %d\n", getpid(), getppid());
             close(pipe2_ida[1]);        //cerrar escritura
             close(pipe2_vuelta[0]);    //cerrar lectura
@@ -124,7 +132,8 @@ int main(int argc,char* argv[]){
             int check;
 
             read( pipe2_ida[0], buffer, SIZE );  //leer pipe_ida y guardar en buffer
-            if(strchr(buffer, '\0')==NULL){		//revisa si el mensaje resivido tiene un final de string
+
+            if(strchr(buffer, '\0')==NULL){		//revisa si el mensaje resivido tiene un final de string, buscar errores
 				printf("NO '0' IN PROCESS 2\n");
 			}
             
@@ -142,7 +151,7 @@ int main(int argc,char* argv[]){
         }else{
             pid3 = fork();
             if (pid3 == 0){ //entra el hijo 3
-                //codigo de hijo 3
+                //CODIGO DE HIJO 3
                 printf("Proceso hijo 3 creado, PID: %d, PPID: %d\n", getpid(), getppid());
                 close(pipe3_ida[1]);       //cerrar escritura
                 close(pipe2_vuelta[0]);    //cerrar lectura
@@ -150,7 +159,8 @@ int main(int argc,char* argv[]){
                 int check;
 
                 read( pipe3_ida[0], buffer, SIZE );  //leer pipe_ida y guardar en buffer
-                if(strchr(buffer, '\0')==NULL){		//revisa si el mensaje recibido tiene un final de string
+
+                if(strchr(buffer, '\0')==NULL){		//revisa si el mensaje recibido tiene un final de string, buscar errores
 					printf("NO '0' IN PROCESS 3\n");
 				}
                 
@@ -160,7 +170,7 @@ int main(int argc,char* argv[]){
                 write(pipe3_vuelta[1], &check, (sizeof(check)));	//enviar por pipe el int resultado del checksum
 
             
-                close(pipe3_ida[0]);        //cerrar pipe3_ida
+                close(pipe3_ida[0]);            //cerrar pipe3_ida
                 close(pipe3_vuelta[1]);        //cerrar pipe3_vuelta
                 printf("Hijo3: Exit \n");
                 exit(0);
@@ -168,9 +178,9 @@ int main(int argc,char* argv[]){
 
 
             }else{          //el padre termino de hacer los hijos
-                //codigo del padre
+                //CODIGO DEL PADRE
                 
-                close(pipe1_ida[0]);    //cerrar lectura pipe_ida
+                close(pipe1_ida[0]);        //cerrar lectura pipe_ida
                 close(pipe2_ida[0]);
                 close(pipe3_ida[0]);
 
@@ -189,7 +199,7 @@ int main(int argc,char* argv[]){
                 int buffer1, buffer2, buffer3;
 				
 				printf("Padre: Esperando mensajes de procesos hijos\n");	//lee los mensajes de los hijos en sus buffers individuales
-                read( pipe1_vuelta[0], &buffer1, sizeof(buffer1) ) ;	//se reciben datos int
+                read( pipe1_vuelta[0], &buffer1, sizeof(buffer1) ) ;    	    //se reciben datos int
                 read( pipe2_vuelta[0], &buffer2, sizeof(buffer2) ) ;
                 read( pipe3_vuelta[0], &buffer3, sizeof(buffer3) ) ;
 
@@ -198,11 +208,11 @@ int main(int argc,char* argv[]){
                 printf("Padre: Checksum proceso hijo 3: %d\n", buffer3);
                 
 
-                close(pipe1_ida[1]);  	  //cerrar pipes de escritura
+                close(pipe1_ida[1]);  	  //cerrar los 3 pipe_ida 
                 close(pipe2_ida[1]);
                 close(pipe3_ida[1]);
 
-                close(pipe1_vuelta[0]);    //cerrar pipes d
+                close(pipe1_vuelta[0]);    //cerrar los 3 pipes_vuelta
                 close(pipe2_vuelta[0]);
                 close(pipe3_vuelta[0]);
                 
