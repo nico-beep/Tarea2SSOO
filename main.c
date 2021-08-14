@@ -1,5 +1,6 @@
 /**
  *Tarea 2 - ELO321 
+ *13/08/2021
  * 
  * Integrantes:
  * Francisco Rodriguez H - 201520154-3
@@ -30,6 +31,7 @@ int main(int argc,char* argv[]){
 	
     /**
         *Se introducen 3 strings por consola
+        *Si se ingresa mas de 50 caracteres se se trunca a solo los primeros
     **/
     char str1[SIZE];
 	do{
@@ -38,7 +40,7 @@ int main(int argc,char* argv[]){
 		if (strchr(str1, '\n') == NULL) {	//buscar salto de linea en el buffer
 			int ch;
 			//printf("No newline found\n");
-			while ((ch = fgetc(stdin)) != '\n' && ch != EOF) { 			//avanzar en los caracteres del stdin hasta '\n'
+			while ((ch = fgetc(stdin)) != '\n' && ch != EOF) { 			//avanzar en los caracteres del stdin hasta '\n' o EOF
 			}
 		}	
 	}while (strlen(str1) == 0);   
@@ -51,7 +53,7 @@ int main(int argc,char* argv[]){
 		if (strchr(str2, '\n') == NULL) {	//buscar salto de linea en el buffer
 			int ch;
 			//printf("No newline found\n");
-			while ((ch = fgetc(stdin)) != '\n' && ch != EOF) { 			// avanzar en los caracteres del stdin hasta '\n'
+			while ((ch = fgetc(stdin)) != '\n' && ch != EOF) { 			// avanzar en los caracteres del stdin hasta '\n' o EOF
 			}
 		}	
 	}while (strlen(str2) == 0);
@@ -66,19 +68,19 @@ int main(int argc,char* argv[]){
 		if (strchr(str3, '\n') == NULL) {	//buscar salto de linea en el buffer
 			int ch;
 			//printf("No newline found\n");
-			while ((ch = fgetc(stdin)) != '\n' && ch != EOF) { 			// avanzar en los caracteres del stdin hasta '\n'
+			while ((ch = fgetc(stdin)) != '\n' && ch != EOF) { 			// avanzar en los caracteres del stdin hasta '\n' o EOF
 			}
 		}	
 	}while (strlen(str3) == 0);
 	printf("Len: %ld, %s\n", strlen(str3), str3);
 
-	//pid para resultados de los fork()
+	//ints pid para resultados de los fork()
     int pid1;
     int pid2;
     int pid3;
 
     /**
-     *Se cream pipes(1-2-3) ida(padre->hijo) y vuelta(hijo->padre)
+     *Se crean pipes(1-2-3) ida(padre->hijo) y vuelta(hijo->padre)
     **/
     int pipe1_ida[2];
     int pipe1_vuelta[2];
@@ -89,13 +91,14 @@ int main(int argc,char* argv[]){
     int pipe3_ida[2];
     int pipe3_vuelta[2];
 
-    pipe(pipe1_ida);
+    pipe(pipe1_ida);    
     pipe(pipe2_ida);
     pipe(pipe3_ida);
 
     pipe(pipe1_vuelta);
     pipe(pipe2_vuelta);
     pipe(pipe3_vuelta);
+
 
     /**
     *Creacion de solo 3 procesos hijos y sus funcionamientos
@@ -154,7 +157,7 @@ int main(int argc,char* argv[]){
 
 
         }else{
-            pid3 = fork();
+            pid3 = fork();  //tercer fork()
             if (pid3 == 0){ //entra el hijo 3
                 //CODIGO DE HIJO 3
                 printf("Proceso hijo 3 creado, PID: %d, PPID: %d\n", getpid(), getppid());
@@ -193,7 +196,8 @@ int main(int argc,char* argv[]){
                 close(pipe2_vuelta[1]);
                 close(pipe3_vuelta[1]);
 
-				//mandar los strings
+
+				//mandar los strings por pipes
 				printf("Padre: Escribiendo mensajes a procesos hijos\n");
                 write(pipe1_ida[1], str1, (strlen(str1)));
                 write(pipe2_ida[1], str2, (strlen(str2)));
@@ -208,7 +212,7 @@ int main(int argc,char* argv[]){
                 read( pipe2_vuelta[0], &buffer2, sizeof(buffer2) ) ;
                 read( pipe3_vuelta[0], &buffer3, sizeof(buffer3) ) ;
 
-                printf("Padre: Checksum proceso hijo 1: %d\n", buffer1);
+                printf("Padre: Checksum proceso hijo 1: %d\n", buffer1);        //print resultados
                 printf("Padre: Checksum proceso hijo 2: %d\n", buffer2);
                 printf("Padre: Checksum proceso hijo 3: %d\n", buffer3);
                 
