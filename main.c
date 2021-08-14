@@ -11,6 +11,7 @@
  * 
  * MAKEFILE
  * make run : para compilar y ejecutar 
+ * make clean
  * 
 **/
 
