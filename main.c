@@ -6,6 +6,11 @@
  * Natalia Baeza Q - 201621038-5
  * Lorens Paez P - 201630012-0
  * Nicolas Miranda V - 201721013-3
+ * 
+ * 
+ * MAKEFILE
+ * make run : para compilar y ejecutar 
+ * 
 **/
 
 #include <stdio.h>
@@ -15,7 +20,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define SIZE 51
+#define SIZE 51 //50 + 1, para tener espacio para el '\0' y 50 caracteres
 
 int checksum(char b[],int k);
 
@@ -24,7 +29,7 @@ int main(int argc,char* argv[]){
 	
 	
     /**
-    *Se introducen 3 strings por consola
+        *Se introducen 3 strings por consola
     **/
     char str1[SIZE];
 	do{
